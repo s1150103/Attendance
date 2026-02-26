@@ -1,0 +1,12 @@
+attendance.db
+*.JPG
+*.jpg
+*.png
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+dist/
+.venv/
+venv/

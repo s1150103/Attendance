@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}月次レポート - 出勤簿{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">{{ year }}年 {{ month }}月 レポート</h4>
+  <div>
+    <a href="/report?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-secondary btn-sm">← 前月</a>
+    <a href="/report?year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-secondary btn-sm">次月 →</a>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row text-center">
+      <div class="col">
+        <div class="text-muted small">出勤日数</div>
+        <div class="fs-4 fw-bold">{{ rows | length }} 日</div>
+      </div>
+      <div class="col">
+        <div class="text-muted small">合計勤務時間</div>
+        <div class="fs-4 fw-bold">
+          {{ total_minutes // 60 }}時間 {{ total_minutes % 60 }}分
+        </div>
+      </div>
+      <div class="col d-flex align-items-center justify-content-center">
+        <a href="/export/csv?year={{ year }}&month={{ month }}" class="btn btn-outline-success">
+          📥 CSV ダウンロード
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>日付</th>
+          <th>出勤</th>
+          <th>退勤</th>
+          <th>勤務時間</th>
+          <th>備考</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.record.date }}</td>
+          <td>
+            {% if row.record.check_in %}
+              {{ row.record.check_in.strftime("%H:%M") }}
+            {% else %}
+              <span class="text-muted">-</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if row.record.check_out %}
+              {{ row.record.check_out.strftime("%H:%M") }}
+            {% else %}
+              <span class="badge bg-warning text-dark">勤務中</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if row.work_minutes is not none %}
+              {{ row.work_minutes // 60 }}時間{{ row.work_minutes % 60 }}分
+            {% else %}
+              <span class="text-muted">-</span>
+            {% endif %}
+          </td>
+          <td>{{ row.record.note or "" }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">この月のレコードはありません</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

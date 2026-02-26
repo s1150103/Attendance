@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}ダッシュボード - 出勤簿{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body text-center p-5">
+        <h5 class="text-muted mb-1">{{ today }}</h5>
+        <h3 class="mb-4">{{ user.display_name }} さん</h3>
+
+        {% if record %}
+          <div class="mb-3">
+            <span class="badge bg-success fs-6">出勤済み</span>
+            <div class="mt-2 text-muted">
+              出勤: <strong>{{ record.check_in.strftime("%H:%M") }}</strong>
+              {% if record.check_out %}
+              　退勤: <strong>{{ record.check_out.strftime("%H:%M") }}</strong>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if record.check_out %}
+            <!-- 退勤済み → 退勤取消ボタン -->
+            <div class="alert alert-info">
+              退勤打刻済みです。取消して再打刻できます。
+            </div>
+            <form method="post" action="/punch">
+              <button type="submit" class="btn btn-outline-warning btn-lg px-5"
+                onclick="return confirm('退勤を取消しますか？')">
+                退勤を取消す
+              </button>
+            </form>
+          {% else %}
+            <!-- 出勤中 → 退勤ボタン -->
+            <form method="post" action="/punch">
+              <button type="submit" class="btn btn-danger btn-lg px-5">
+                🏠 退勤する
+              </button>
+            </form>
+          {% endif %}
+
+        {% else %}
+          <!-- 未打刻 → 出勤ボタン -->
+          <div class="mb-3">
+            <span class="badge bg-secondary fs-6">未打刻</span>
+          </div>
+          <form method="post" action="/punch">
+            <button type="submit" class="btn btn-success btn-lg px-5">
+              🏢 出勤する
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mt-3 text-center">
+      <a href="/report?year={{ year }}&month={{ month }}" class="btn btn-outline-primary btn-sm">
+        今月のレポートを見る
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
