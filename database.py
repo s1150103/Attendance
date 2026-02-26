@@ -9,9 +9,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# SQLiteのファイルパス。attendance.db というファイルが自動生成される。
-# "sqlite:///" はSQLiteを使うという宣言。
-DATABASE_URL = "sqlite:///./attendance.db"
+# SQLiteのファイルパス。
+# ローカル: ./attendance.db（カレントディレクトリ）
+# Fly.io : /data/attendance.db（永続ボリューム）
+# 環境変数 DATABASE_URL が設定されていればそちらを優先する。
+import os
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./attendance.db")
 
 # DBエンジンの作成。
 # check_same_thread=False は SQLite をマルチスレッド環境（FastAPI）で使うための設定。
